@@ -1,0 +1,2 @@
+rootProject.name='Pebble 2+HR Bluetooth Helper'
+include ':app'
