@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothAdapter;
 import android.widget.ArrayAdapter;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -27,6 +28,16 @@ class MyGetBTDevices implements View.OnClickListener {
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
+                if (deviceName.equals("Pebble 4D3F")){
+                    int bondStateBefore = device.getBondState();
+                    try {
+                        Method m = device.getClass()
+                                .getMethod("removeBond", (Class[]) null);
+                        m.invoke(device, (Object[]) null);
+                    } catch (Exception e) {
+                    }
+                    int bondStateAfter = device.getBondState();
+                }
             };
         };
     };
