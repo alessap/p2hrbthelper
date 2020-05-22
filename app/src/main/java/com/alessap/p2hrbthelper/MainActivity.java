@@ -5,6 +5,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +20,7 @@ import java.util.Set;
 
 
 class MyGetBTDevices implements View.OnClickListener {
-
+    // TODO alessap: How to enable a background process?
     @Override
     public void onClick(View view) {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -28,15 +30,17 @@ class MyGetBTDevices implements View.OnClickListener {
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
+                // TODO alessap: need to check if device is disconnected and only then unpair it
+                // TODO alessap: allow user to device which device to disconnect
                 if (deviceName.equals("Pebble 4D3F")){
-                    int bondStateBefore = device.getBondState();
+                    int stateConnected = BluetoothAdapter.STATE_CONNECTED;
                     try {
                         Method m = device.getClass()
                                 .getMethod("removeBond", (Class[]) null);
                         m.invoke(device, (Object[]) null);
                     } catch (Exception e) {
+                        Log.e("Removing has failed.", e.getMessage());
                     }
-                    int bondStateAfter = device.getBondState();
                 }
             };
         };
