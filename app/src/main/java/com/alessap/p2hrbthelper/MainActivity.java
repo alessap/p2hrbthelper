@@ -10,50 +10,42 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothAdapter;
-import android.widget.ArrayAdapter;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-
 class MyGetBTDevices implements View.OnClickListener {
-    private Object BluetoothManager;
+
     // TODO alessap: How to enable a background process?
+    // TODO alessap: allow user to define which device to disconnect
+
     @Override
     public void onClick(View view) {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-
-        BluetoothManager bluetoothManager = (android.bluetooth.BluetoothManager) BluetoothManager;
-        List<BluetoothDevice> connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
-        
-        if (connectedDevices.size() > 0) {
-            for (BluetoothDevice connected_device : connectedDevices) {
-                String connected_deviceName = connected_device.getName();
-            }
-        }
+        boolean is_connected = false;
 
         if (pairedDevices.size() > 0) {
             // There are paired devices. Get the name and address of each paired device.
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
-                // TODO alessap: need to check if device is disconnected and only then unpair it
-                // TODO alessap: allow user to device which device to disconnect
-                if (deviceName.equals("Pebble 4D3F")){
-                    int stateConnected = BluetoothAdapter.STATE_CONNECTED;
+                try {
+                    Method m = device.getClass().getMethod("isConnected", (Class[]) null);
+                    is_connected = (boolean) m.invoke(device, (Object[]) null);
+                } catch (Exception e) {
+                    is_connected = false;
+                    Log.e("Getting connected state has failed.", e.getMessage());
+                }
+                if (deviceName.equals("Pebble 4D3F") && !is_connected){
                     try {
                         Method m = device.getClass()
                                 .getMethod("removeBond", (Class[]) null);
                         m.invoke(device, (Object[]) null);
                     } catch (Exception e) {
-                        // Log.e("Removing has failed.", e.getMessage());
+                        Log.e("Removing has failed.", e.getMessage());
                     }
                 }
             };
