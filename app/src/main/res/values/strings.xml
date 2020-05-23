@@ -7,7 +7,12 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment</string>
+    <string name="hello_first_fragment">
+        This app helps the annoying disconnection that happens between
+        Android 10 and Pebble 2 SE and HR. By trial and error, users found that forgetting the
+        Pebble from the Bluetooth paired device list trigger the pairing on the watch which
+        connects the device once again. Click the below button to try!
+    </string>
+    <string name="hello_second_fragment">@string/hello_first_fragment</string>
     <string name="forgetpebble">Forget Pebble</string>
 </resources>
