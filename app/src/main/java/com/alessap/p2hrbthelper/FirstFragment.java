@@ -31,10 +31,12 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
-        view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.button_forgetPebble).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("Button","Button activated.");
+                ForgetPebble forgetPebble = new ForgetPebble();
+                forgetPebble.onClick(view);
             }
         });
     }

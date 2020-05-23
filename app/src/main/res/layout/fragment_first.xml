@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@id/textview_first" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_forgetPebble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="162dp"
@@ -36,7 +36,6 @@
         android:layout_marginBottom="116dp"
         android:text="@string/forgetpebble"
         android:clickable="true"
-        android:onClick="forgetPebble"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
