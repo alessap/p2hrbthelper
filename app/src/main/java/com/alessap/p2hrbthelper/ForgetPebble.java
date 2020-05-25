@@ -33,7 +33,7 @@ class ForgetPebble implements View.OnClickListener {
                         is_connected = false;
                         Log.e("Getting connected state has failed.", e.getMessage());
                     }
-                    if (deviceName.equals("Pebble 21B8"))
+                    if (deviceName.startsWith("Pebble "))
                     {
                         Log.d("Forget Pebble", "Found the Pebble!");
                         if (!is_connected) {
