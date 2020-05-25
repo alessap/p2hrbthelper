@@ -18,4 +18,6 @@
     </string>
     <string name="hello_second_fragment">@string/hello_first_fragment</string>
     <string name="forgetpebble">Forget Pebble</string>
+    <string name="channel_name">Forget Pebble</string>
+    <string name="channel_description">Monitors your Pebble connection</string>
 </resources>

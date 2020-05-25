@@ -14,17 +14,17 @@ class ForgetPebble implements View.OnClickListener {
         // TODO alessap: How to enable a background process?
         // TODO alessap: allow user to define which device to disconnect
 
-        @Override
-        public void onClick(View view) {
-            Log.d("Forget Pebble","Forget Pebble activated.");
+        public static void forgetIt() {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
             boolean is_connected = false;
 
             if (pairedDevices.size() > 0) {
+                Log.d("Forget Pebble", "Found " + pairedDevices.size() + " devices");
                 // There are paired devices. Get the name and address of each paired device.
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
+                    Log.d("Forget Pebble", "Check device named " + deviceName);
                     String deviceHardwareAddress = device.getAddress(); // MAC address
                     try {
                         Method m = device.getClass().getMethod("isConnected", (Class[]) null);
@@ -33,16 +33,29 @@ class ForgetPebble implements View.OnClickListener {
                         is_connected = false;
                         Log.e("Getting connected state has failed.", e.getMessage());
                     }
-                    if (deviceName.equals("Pebble 4D3F") && !is_connected){
-                        try {
-                            Method m = device.getClass()
-                                    .getMethod("removeBond", (Class[]) null);
-                            m.invoke(device, (Object[]) null);
-                        } catch (Exception e) {
-                            Log.e("Removing has failed.", e.getMessage());
+                    if (deviceName.equals("Pebble 21B8"))
+                    {
+                        Log.d("Forget Pebble", "Found the Pebble!");
+                        if (!is_connected) {
+                            try {
+                                Log.d("Forget Pebble", "Forget it.");
+                                Method m = device.getClass()
+                                        .getMethod("removeBond", (Class[]) null);
+                                m.invoke(device, (Object[]) null);
+                            } catch (Exception e) {
+                                Log.e("Removing has failed.", e.getMessage());
+                            }
+                        } else {
+                            Log.d("Forget Pebble", "It's still connected, remember it.");
                         }
                     }
                 };
             };
+        }
+
+        @Override
+        public void onClick(View view) {
+            Log.d("Forget Pebble","Forget Pebble activated.");
+            forgetIt();
         };
     };
