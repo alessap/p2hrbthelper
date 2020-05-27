@@ -28,20 +28,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".PollReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":remote" />
         <service
             android:name=".PollJobService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".PollService"
-            android:enabled="true"
-            android:exported="true" />
         <service
             android:name=".ForegroundService"
             android:enabled="true"

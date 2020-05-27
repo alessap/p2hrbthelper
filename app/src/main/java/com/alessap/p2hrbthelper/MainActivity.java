@@ -2,6 +2,9 @@ package com.alessap.p2hrbthelper;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -17,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final boolean ENABLE_FOREGROUND_SERVICE = true;
     public static final boolean ENABLE_START_AT_BOOT = true;
+    private static final long POLL_PERIOD = 60000L;   // One minute
+
+    private static boolean startedForegroundService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +32,22 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Start the regular polling
-        PollService.scheduleJob(getApplicationContext());
+        scheduleJob(getApplicationContext());
 
         startForegroundService(getApplicationContext());
     }
 
+    public static void scheduleJob(Context context) {
+        ComponentName serviceComponent = new ComponentName(context, PollJobService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        builder.setMinimumLatency(POLL_PERIOD); // wait at least poll period
+        builder.setOverrideDeadline(2 * POLL_PERIOD); // maximum delay
+        //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED); // require unmetered network
+        //builder.setRequiresDeviceIdle(true); // device should be idle
+        //builder.setRequiresCharging(false); // we don't care if the device is charging or not
+        JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
+        jobScheduler.schedule(builder.build());
+    }
     private static void createNotificationChannel(Context context) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -49,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void startForegroundService(Context context) {
-        if (ENABLE_FOREGROUND_SERVICE) {
+        if (ENABLE_FOREGROUND_SERVICE && !startedForegroundService) {
             createNotificationChannel(context);
-            context.startService(new Intent(context, ForegroundService.class));
+            context.startForegroundService(new Intent(context, ForegroundService.class));
+            startedForegroundService = true;
         }
     }
 

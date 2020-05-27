@@ -11,8 +11,7 @@ public class StartServiceReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (MainActivity.ENABLE_START_AT_BOOT) {
-            PollService.scheduleJob(context);
-            MainActivity.startForegroundService(context);
+            MainActivity.scheduleJob(context);
         }
     }
 }

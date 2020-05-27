@@ -14,9 +14,16 @@ public class PollJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         final Context context = getApplicationContext();
-        Intent service = new Intent(context, PollService.class);
-        context.startService(service);
-        PollService.scheduleJob(context); // reschedule the job
+
+//        Intent service = new Intent(context, PollService.class);
+//        context.startService(service);
+        ForgetPebble.forgetIt();
+
+        MainActivity.scheduleJob(context); // reschedule the job
+
+        // Make sure the foreground service is running if enabled.
+        MainActivity.startForegroundService(context);
+
         return true;
     }
 
