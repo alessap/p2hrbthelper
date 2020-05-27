@@ -3,6 +3,10 @@ package com.alessap.p2hrbthelper;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
@@ -11,8 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 public class PollService extends IntentService {
-    private static final int NOTIF_ID = 1;
-    public static final String NOTIF_CHANNEL_ID = "P2HRBT_Channel_Id";
+    private static final long POLL_PERIOD = 5000L;   // One minute
 
     public PollService() {
         super("PollService");
@@ -30,37 +33,16 @@ public class PollService extends IntentService {
         ForgetPebble.forgetIt();
     }
 
-    // XXX Might not need the rest of this, unless having a persistent notification is useful
-    // to quickly access the manual button.  Setting ENABLE_FOREGROUND_SERVICE to FALSE will
-    // disable this function.
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-
-        // do your jobs here
-
-        Log.d("PollService", "onStartCommand: ");
-
-        if (MainActivity.ENABLE_FOREGROUND_SERVICE) {
-            startForeground();
-        }
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    private void startForeground() {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-
-        startForeground(NOTIF_ID, new NotificationCompat.Builder(this,
-                NOTIF_CHANNEL_ID) // don't forget create a notification channel first
-                .setOngoing(true)
-//                .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Service is monitoring your Pebble")
-                .setContentIntent(pendingIntent)
-                .build());
+    public static void scheduleJob(Context context) {
+        ComponentName serviceComponent = new ComponentName(context, PollJobService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        builder.setMinimumLatency(POLL_PERIOD); // wait at least poll period
+        builder.setOverrideDeadline(2 * POLL_PERIOD); // maximum delay
+        //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED); // require unmetered network
+        //builder.setRequiresDeviceIdle(true); // device should be idle
+        //builder.setRequiresCharging(false); // we don't care if the device is charging or not
+        JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
+        jobScheduler.schedule(builder.build());
     }
 }
 
