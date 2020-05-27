@@ -1,7 +1,10 @@
 package com.alessap.p2hrbthelper;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +19,10 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final boolean ENABLE_FOREGROUND_SERVICE = true;
+
+    private static final long ONE_MINUTE = 60000L;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,8 +30,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        createNotificationChannel();
-        startService(new Intent(this, PollService.class));
+        scheduleAlarm();
+
+        if (ENABLE_FOREGROUND_SERVICE) {
+            createNotificationChannel();
+            startService(new Intent(this, PollService.class));
+        }
     }
 
     private void createNotificationChannel() {
@@ -41,6 +52,33 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    // Setup a recurring alarm every half hour
+    public void scheduleAlarm() {
+        // Construct an intent that will execute the AlarmReceiver
+        Intent intent = new Intent(getApplicationContext(), PollReceiver.class);
+        // Create a PendingIntent to be triggered when the alarm goes off
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, PollReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every every half hour from this point onwards
+        long firstMillis = System.currentTimeMillis(); // alarm is set right away
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+        // XXX Interval just appears to be a Long with a number of milliseconds, although it does
+        // seem to enforce a minimum of around 1 minute.
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                ONE_MINUTE, pIntent);
+    }
+
+    // If we ever want to turn off the periodic poll...
+    public void cancelAlarm() {
+        Intent intent = new Intent(getApplicationContext(), PollReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, PollReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pIntent);
     }
 
     @Override
