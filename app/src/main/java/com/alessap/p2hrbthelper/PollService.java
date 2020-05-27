@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 public class PollService extends IntentService {
-    private static final long POLL_PERIOD = 5000L;   // One minute
+    private static final long POLL_PERIOD = 60000L;   // One minute
 
     public PollService() {
         super("PollService");

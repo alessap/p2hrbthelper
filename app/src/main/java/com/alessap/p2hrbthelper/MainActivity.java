@@ -2,6 +2,7 @@ package com.alessap.p2hrbthelper;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,26 +28,30 @@ public class MainActivity extends AppCompatActivity {
         // Start the regular polling
         PollService.scheduleJob(getApplicationContext());
 
-        if (ENABLE_FOREGROUND_SERVICE) {
-            createNotificationChannel();
-            startService(new Intent(this, ForegroundService.class));
-        }
+        startForegroundService(getApplicationContext());
     }
 
-    public void createNotificationChannel() {
+    private static void createNotificationChannel(Context context) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d("MainActivity", "Creating notification channel");
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
+            CharSequence name = context.getString(R.string.channel_name);
+            String description = context.getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(ForegroundService.NOTIF_CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public static void startForegroundService(Context context) {
+        if (ENABLE_FOREGROUND_SERVICE) {
+            createNotificationChannel(context);
+            context.startService(new Intent(context, ForegroundService.class));
         }
     }
 
