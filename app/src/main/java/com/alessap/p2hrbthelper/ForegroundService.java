@@ -1,30 +1,34 @@
 package com.alessap.p2hrbthelper;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-public class PollService extends Service {
-    private static final int NOTIF_ID = 1;
-    public static final String NOTIF_CHANNEL_ID = "P2HRBT_Channel_Id";
-
-    public PollService() {
-    }
+/**
+ * Used just to provide a persistent notification now.
+ */
+public class ForegroundService extends Service {
+    private static final int NOTIF_ID = 2;
+    public static final String NOTIF_CHANNEL_ID = "P2HRBT_FGSvc_Channel_Id";
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("ForegroundService", "onBind:");
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-
-        // do your jobs here
+        Log.d("ForegroundService", "onStartCommand: ");
 
         startForeground();
 
@@ -32,6 +36,7 @@ public class PollService extends Service {
     }
 
     private void startForeground() {
+        Log.d("ForegroundService", "Start Foreground");
         Intent notificationIntent = new Intent(this, MainActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
