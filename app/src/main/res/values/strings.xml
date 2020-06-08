@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pebble 2+HR Bluetooth Helper</string>
+    <string name="app_name">P2HRBTHelper</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
